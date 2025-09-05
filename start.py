@@ -429,7 +429,7 @@ class Layer4(Thread):
     def TCP(self) -> None:
         s = None
         with suppress(Exception), self.open_connection(AF_INET, SOCK_STREAM) as s:
-            while Tools.send(s, randbytes(4778)):
+            while Tools.send(s, randbytes(15778)):
                 continue
         Tools.safe_close(s)
 
