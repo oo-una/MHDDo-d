@@ -42,10 +42,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-            sudo python3 -m pip install --ignore-installed --upgrade pip
-            if [ -f requirements.txt ]; then
-               sudo python3 -m pip install --ignore-installed -r requirements.txt
-            fi
+         sudo python3 -m pip install --upgrade pip --root-user-action=ignore --ignore-installed
+         if [ -f requirements.txt ]; then
+          sudo python3 -m pip install -r requirements.txt --root-user-action=ignore --ignore-installed
+         fi
       - name: Run Stress Test
         run: |
           if [[ "${{ github.event.inputs.layer }}" == "7" ]]; then
