@@ -53,11 +53,12 @@ jobs:
             sudo python3 start.py \
               ${{ github.event.inputs.method }} \
               ${{ github.event.inputs.target }} \
-              5 \
+              0 \
               ${{ github.event.inputs.threads }} \
-              "" \
+              "http.txt" \
               ${{ github.event.inputs.rpc }} \
-              ${{ github.event.inputs.duration }}
+              ${{ github.event.inputs.duration }} \
+              True
           elif [[ "${{ github.event.inputs.layer }}" == "4" ]]; then
             case "${{ github.event.inputs.method }}" in
               DNS|NTP|MEM|CLDAP|ARD|RDP|CHAR)
