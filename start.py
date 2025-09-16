@@ -1,4 +1,4 @@
-#!/usr/bin/env python3k
+#!/usr/bin/env python3kj
  
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import suppress
